@@ -1,0 +1,20 @@
+[project]
+name = "frejosaru-etl"
+version = "0.1.0"
+description = "ETL demo for tech test"
+authors = [{name="frejosaru", email="you@example.com"}]
+requires-python = ">=3.10"
+dependencies = [
+    "pandas==2.2.2",
+    "loguru==0.7.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.2.0",
+    "ruff",
+    "mypy",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["etl/tests"]

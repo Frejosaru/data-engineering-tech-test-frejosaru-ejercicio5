@@ -1,0 +1,42 @@
+name: Build & Push Docker
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version
+        id: vars
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          else
+            VERSION=${GITHUB_SHA::7}
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build
+        run: |
+          docker build -f docker/etl.Dockerfile -t ghcr.io/${{ github.repository }}:${{ steps.vars.outputs.VERSION }} .
+          docker tag ghcr.io/${{ github.repository }}:${{ steps.vars.outputs.VERSION }} ghcr.io/${{ github.repository }}:latest
+
+      - name: Push
+        run: |
+          docker push ghcr.io/${{ github.repository }}:${{ steps.vars.outputs.VERSION }}
+          docker push ghcr.io/${{ github.repository }}:latest

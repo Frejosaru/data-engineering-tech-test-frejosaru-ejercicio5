@@ -1,0 +1,44 @@
+version: "3.9"
+x-airflow-common:
+  &airflow-common
+  image: apache/airflow:2.9.1
+  environment:
+    - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+    - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    - AIRFLOW__WEBSERVER__RBAC=True
+    - _PIP_ADDITIONAL_REQUIREMENTS=
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ../etl:/opt/etl
+    - ../data:/opt/data
+  networks:
+    - airflow
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    networks:
+      - airflow
+
+  airflow:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  scheduler:
+    <<: *airflow-common
+    command: scheduler
+    depends_on:
+      - airflow
+      - postgres
+
+networks:
+  airflow:
+    driver: bridge
