@@ -8,9 +8,9 @@
 - Scripts de CI (lint, test, build docker).
 - Configuración de pre-commit, tox, editorconfig y Makefile.
 
-## Próximos fragmentos
-- Fragmento 2: código ETL / Airflow / SQL / modeling (fuente).
-- Fragmento 3: docker/, airflow/, etc. (infra/orquestación).
+## incluye
+-  código ETL / Airflow / SQL / modeling (fuente).
+-  docker/, airflow/, etc. (infra/orquestación).
 
 ## Cómo usar
 1. Ejecuta `pre-commit install`.
